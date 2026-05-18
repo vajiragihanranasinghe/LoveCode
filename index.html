@@ -2,505 +2,484 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-    <title>LOVE CODE | Find & Connect with People Near You</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>LOVE CODE - Real GPS Distance Detection</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{background:linear-gradient(145deg,#0a0f1e,#0c1222);min-height:100vh;font-family:'Segoe UI',system-ui,sans-serif;padding:16px}
-        .container{max-width:550px;margin:0 auto}
-        .permission-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(145deg,#0a0f1e,#0c1222);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-        .permission-card{background:rgba(15,23,42,.98);backdrop-filter:blur(20px);border-radius:48px;padding:40px 24px;text-align:center;border:1px solid #334155;max-width:320px;animation:fadeIn .5s ease}
-        @keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-        .permission-card .icon{font-size:64px;margin-bottom:20px}
-        .permission-card h2{color:#fff;margin-bottom:12px;font-size:1.6rem}
-        .permission-card p{color:#94a3b8;margin-bottom:24px;font-size:.9rem}
-        .permission-btn{background:#3b82f6;border:none;border-radius:60px;padding:14px 32px;color:#fff;font-size:1rem;font-weight:600;cursor:pointer;width:100%}
-        .permission-btn:hover{background:#2563eb;transform:scale(.98)}
-        .privacy-note{font-size:.65rem;color:#64748b;margin-top:16px}
-        .main-app{display:none}
-        .header{text-align:center;margin-bottom:16px}
-        .header h1{font-size:1.8rem;background:linear-gradient(135deg,#ff6b6b,#ff8e53,#ff6b9d);background-clip:text;-webkit-background-clip:text;color:transparent}
-        .header p{color:#94a3b8;font-size:.7rem}
-        .card{background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-radius:28px;padding:18px;border:1px solid #334155}
-        .status-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0f172a;border-radius:60px;font-size:.7rem;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-        .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
-        .dot.green{background:#10b981;box-shadow:0 0 8px #10b981;animation:pulse 1.5s infinite}
-        .dot.yellow{background:#f59e0b}
-        .dot.red{background:#ef4444}
-        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-        .stats-row{display:flex;justify-content:space-between;margin-bottom:16px;font-size:.65rem;flex-wrap:wrap;gap:8px}
-        .stat-chip{background:#0f172a;padding:4px 10px;border-radius:40px}
-        .people-list{max-height:280px;overflow-y:auto;margin-bottom:16px}
-        .person-card{background:#0f172a;border-radius:18px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-left:3px solid #ff6b9d;transition:0.1s}
-        .person-card:hover{background:#1e293b;transform:translateX(4px)}
-        .person-card.nearby{border-left-color:#10b981}
-        .person-card.medium{border-left-color:#f59e0b}
-        .person-card.far{border-left-color:#ef4444}
-        .person-info h4{font-size:.95rem;margin-bottom:4px}
-        .person-distance{font-size:.65rem}
-        .nearby .person-distance{color:#34d399}
-        .medium .person-distance{color:#fbbf24}
-        .far .person-distance{color:#fca5a5}
-        .chat-area{background:#0f172a;border-radius:20px;padding:12px;margin-top:12px}
-        .chat-messages{max-height:200px;overflow-y:auto;margin-bottom:12px;font-size:.85rem}
-        .message{margin-bottom:8px;padding:8px 12px;border-radius:16px;max-width:85%;word-wrap:break-word}
-        .message.sent{background:#ff6b9d;margin-left:auto;text-align:right}
-        .message.received{background:#1e293b}
-        .reaction-bar{display:flex;gap:12px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
-        .reaction-btn{background:#1e293b;border:none;border-radius:40px;padding:8px 16px;font-size:1.2rem;cursor:pointer;transition:0.1s}
-        .reaction-btn:active{transform:scale(0.9)}
-        .input-area{display:flex;gap:8px}
-        .input-area input{flex:1;background:#1e293b;border:none;border-radius:40px;padding:10px 16px;color:#fff;outline:none;font-size:.85rem}
-        .input-area input:focus{border:1px solid #ff6b9d}
-        .input-area button{background:#ff6b9d;border:none;border-radius:40px;padding:8px 20px;color:#fff;cursor:pointer}
-        .empty-state{text-align:center;padding:30px;color:#64748b;font-size:.8rem}
-        .location-status{font-size:.65rem;margin-top:12px;text-align:center;color:#86efac}
-        .group-chat-bar{display:flex;gap:8px;margin-bottom:12px}
-        .group-btn{background:#1e293b;border:none;border-radius:40px;padding:6px 12px;font-size:.7rem;cursor:pointer}
-        .group-btn.active{background:#f59e0b}
-        .version-badge{position:fixed;bottom:8px;right:8px;font-size:9px;color:#475569;background:#1e293b;padding:3px 6px;border-radius:12px;z-index:999}
-        .love-watermark{position:fixed;bottom:8px;left:8px;font-size:8px;color:#ff6b9d;background:#1e293b;padding:3px 8px;border-radius:12px;z-index:999}
-        .notification-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:60px;font-size:.8rem;z-index:1000;animation:fadeOut 3s forwards}
-        @keyframes fadeOut{0%{opacity:1}70%{opacity:1}100%{opacity:0;visibility:hidden}}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #0a0f1e, #0c1222);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 16px;
+        }
+        .container { max-width: 550px; margin: 0 auto; }
+        .card {
+            background: rgba(15, 23, 42, .95);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid #334155;
+        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #ff6b6b, #ff6b9d); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 60px;
+            margin-bottom: 16px;
+            font-size: 0.7rem;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .dot.green { background: #10b981; animation: pulse 1.5s infinite; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        
+        .people-list { max-height: 350px; overflow-y: auto; margin-bottom: 16px; }
+        .person-card {
+            background: #0f172a;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-left: 4px solid #ff6b9d;
+        }
+        .person-card.nearby { border-left-color: #10b981; }
+        .person-card.medium { border-left-color: #f59e0b; }
+        .person-card.far { border-left-color: #ef4444; }
+        .person-name { font-weight: bold; font-size: 1rem; }
+        .person-distance { font-size: 0.7rem; margin-top: 5px; }
+        .nearby .person-distance { color: #34d399; }
+        .medium .person-distance { color: #fbbf24; }
+        .far .person-distance { color: #fca5a5; }
+        
+        .chat-area {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .chat-messages { max-height: 200px; overflow-y: auto; margin-bottom: 12px; font-size: 0.8rem; }
+        .message { margin-bottom: 8px; padding: 8px 12px; border-radius: 16px; max-width: 85%; }
+        .message.sent { background: #ff6b9d; margin-left: auto; }
+        .message.received { background: #1e293b; }
+        .input-area { display: flex; gap: 8px; }
+        .input-area input { flex: 1; background: #1e293b; border: none; border-radius: 40px; padding: 10px; color: white; }
+        .input-area button { background: #ff6b9d; border: none; border-radius: 40px; padding: 10px 20px; color: white; cursor: pointer; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #64748b; }
+        .location-status { font-size: 0.7rem; text-align: center; margin-top: 12px; color: #86efac; }
+        button { background: #ff6b9d; border: none; border-radius: 40px; padding: 12px 24px; color: white; font-size: 1rem; cursor: pointer; margin: 5px; }
     </style>
 </head>
 <body>
-<!-- PERMISSION SCREEN -->
-<div class="permission-screen" id="permissionScreen">
-    <div class="permission-card">
-        <div class="icon">💕</div>
-        <h2>LOVE CODE</h2>
-        <p>Connect with people near you. Find friends, love, or just chat. Your location is private and never stored.</p>
-        <button class="permission-btn" id="allowBtn">💫 Allow GPS & Join</button>
-        <div class="privacy-note">🔒 100% Anonymous • No Signup • Free Forever</div>
-    </div>
-</div>
-
-<!-- MAIN APP -->
-<div class="container main-app" id="mainApp">
-    <div class="header">
-        <h1>💕 LOVE CODE</h1>
-        <p>📍 people near you appear automatically</p>
-    </div>
+<div class="container">
     <div class="card">
+        <div class="header">
+            <h1>💕 LOVE CODE</h1>
+            <p>📍 Shows REAL distance to people nearby</p>
+        </div>
+
         <div class="status-bar">
-            <div><span class="dot" id="statusDot"></span> <span id="statusText">Connecting...</span></div>
-            <div>📡 GPS <span id="gpsAccuracy">—</span></div>
-            <div>👥 <span id="onlineCount">0</span> nearby</div>
+            <div><span class="dot" id="statusDot"></span> <span id="statusText">Ready</span></div>
+            <div>👥 <span id="peerCount">0</span> nearby</div>
+            <div>📡 <span id="gpsStatus">No GPS</span></div>
         </div>
-        <div class="stats-row">
-            <span class="stat-chip">💚 &lt;10m • Very Close</span>
-            <span class="stat-chip">💛 10-30m • Nearby</span>
-            <span class="stat-chip">❤️ 30-100m • Area</span>
-        </div>
-        <div class="group-chat-bar">
-            <button class="group-btn active" id="privateChatBtn">💬 Private Chat</button>
-            <button class="group-btn" id="groupChatBtn">👥 Group Chat</button>
-        </div>
+
         <div class="people-list" id="peopleList">
-            <div class="empty-state">💕 Getting your location...</div>
+            <div class="empty-state">💫 Click START to find people near you</div>
         </div>
+
         <div class="chat-area" id="chatArea" style="display: none;">
-            <div class="reaction-bar">
-                <button class="reaction-btn" data-reaction="💕">💕</button>
-                <button class="reaction-btn" data-reaction="😍">😍</button>
-                <button class="reaction-btn" data-reaction="👋">👋</button>
-                <button class="reaction-btn" data-reaction="❤️">❤️</button>
-                <button class="reaction-btn" data-reaction="🔥">🔥</button>
-                <button class="reaction-btn" data-reaction="✨">✨</button>
-                <button class="reaction-btn" data-reaction="😊">😊</button>
-            </div>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Type a message..." disabled>
-                <button id="sendBtn" disabled>Send 💕</button>
+                <input type="text" id="messageInput" placeholder="Type message..." disabled>
+                <button id="sendBtn" disabled>Send</button>
             </div>
         </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="startBtn" style="flex:1; background:#10b981;">📍 START & ALLOW GPS</button>
+            <button id="stopBtn" style="flex:1; background:#ef4444;">⏹️ STOP</button>
+        </div>
+
         <div class="location-status" id="locationStatus">
-            💫 Allow GPS to see people near you
+            💡 Click START, allow GPS, then ask a friend to do the same!
         </div>
     </div>
-    <div class="version-badge" id="versionBadge">v1.0.0</div>
-    <div class="love-watermark">💕 LOVE CODE</div>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-// ============================================
-// LOVE CODE - WORKING VERSION (No domain lock)
-// Created by: YOUR NAME
-// ============================================
-
-// NO DOMAIN PROTECTION - This version works everywhere!
-console.log("%c💕 LOVE CODE v1.0.0 | Created with love", "color: #ff6b9d; font-size: 14px; font-weight: bold");
-
-// APP VERSION
-const APP_VERSION = "1.0.0";
-document.getElementById('versionBadge').innerHTML = `v${APP_VERSION}`;
-
-// ============================================
-// APP LOGIC - Everything auto-starts after permission
-// ============================================
-let myLocation = null;
-let gpsEnabled = false;
-let watchId = null;
-let peers = new Map();
-let peerJS = null;
-let isActive = false;
-let selectedPeerId = null;
-let groupChatActive = false;
-
-// Random love-themed names
-const lovePrefixes = ['Sweet', 'Kind', 'Lovely', 'Gentle', 'Brave', 'Calm', 'Soft', 'Warm', 'Cute', 'Nice', 'Caring', 'Loving'];
-const loveSuffixes = ['Heart', 'Soul', 'Star', 'Moon', 'Angel', 'Dream', 'Rose', 'Love', 'Peace', 'Smile', 'Bliss', 'Heart'];
-const myName = lovePrefixes[Math.floor(Math.random() * lovePrefixes.length)] + 
-               loveSuffixes[Math.floor(Math.random() * loveSuffixes.length)] + 
-               Math.floor(Math.random() * 100);
-
-// DOM Elements
-const permissionScreen = document.getElementById('permissionScreen');
-const mainApp = document.getElementById('mainApp');
-const allowBtn = document.getElementById('allowBtn');
-const peopleListDiv = document.getElementById('peopleList');
-const chatArea = document.getElementById('chatArea');
-const chatMessagesDiv = document.getElementById('chatMessages');
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const statusDot = document.getElementById('statusDot');
-const statusTextSpan = document.getElementById('statusText');
-const locationStatusSpan = document.getElementById('locationStatus');
-const onlineCountSpan = document.getElementById('onlineCount');
-const gpsAccuracySpan = document.getElementById('gpsAccuracy');
-
-// Distance calculation
-function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-}
-
-function getProximityClass(dist) {
-    if (dist < 10) return 'nearby';
-    if (dist < 30) return 'medium';
-    return 'far';
-}
-
-function getDistanceLabel(dist) {
-    if (dist < 1) return '< 1m • 💕 Very Close';
-    if (dist < 10) return `${dist.toFixed(0)}m • 💚 Very Close`;
-    if (dist < 30) return `${dist.toFixed(0)}m • 💛 Nearby`;
-    return `${dist.toFixed(0)}m • ❤️ In Area`;
-}
-
-function showToast(msg, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'notification-toast';
-    toast.style.background = isError ? '#7f1a1a' : '#1e293b';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-// Update people list
-function updatePeopleList() {
-    const now = Date.now();
-    const visible = Array.from(peers.entries())
-        .filter(([_, d]) => d.location && d.distance !== undefined && (now - d.lastSeen) < 15000)
-        .map(([id, d]) => ({ id, ...d }));
+    // ============================================
+    // LOVE CODE - REAL GPS DISTANCE DETECTION
+    // Works on ANY network (mobile data, different WiFi)
+    // Shows EXACT distance in meters
+    // ============================================
     
-    visible.sort((a, b) => a.distance - b.distance);
-    onlineCountSpan.innerText = visible.length;
+    let peer = null;
+    let myLocation = null;
+    let myName = null;
+    let peers = new Map();
+    let isActive = false;
+    let selectedPeerId = null;
+    let watchId = null;
     
-    if (visible.length === 0) {
-        peopleListDiv.innerHTML = `<div class="empty-state">💕 No one nearby right now<br><span style="font-size:0.65rem">Share this link — anyone who opens it will appear here</span></div>`;
-        return;
+    // Generate random name
+    const names = ['💕 SweetHeart', '💫 KindSoul', '✨ GentleSpirit', '🌸 LovelyDream', '⭐ BraveHeart', '🦋 SoftSoul', '🌙 CalmMind', '💖 WarmHeart'];
+    myName = names[Math.floor(Math.random() * names.length)] + Math.floor(Math.random() * 100);
+    
+    // DOM elements
+    const peopleListDiv = document.getElementById('peopleList');
+    const chatArea = document.getElementById('chatArea');
+    const chatMessagesDiv = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusDot = document.getElementById('statusDot');
+    const statusTextSpan = document.getElementById('statusText');
+    const peerCountSpan = document.getElementById('peerCount');
+    const gpsStatusSpan = document.getElementById('gpsStatus');
+    const locationStatusSpan = document.getElementById('locationStatus');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    
+    // Calculate distance between 2 GPS points (Haversine formula)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371000; // Earth radius in meters
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
     }
     
-    peopleListDiv.innerHTML = '';
-    for (let p of visible) {
-        const cls = getProximityClass(p.distance);
-        const label = getDistanceLabel(p.distance);
-        const div = document.createElement('div');
-        div.className = `person-card ${cls}`;
-        div.innerHTML = `<div class="person-info"><h4>${escapeHtml(p.name || 'Anonymous')}</h4><div class="person-distance">📍 ${label}</div></div><div>💬</div>`;
-        div.onclick = () => { if (!groupChatActive) selectPeer(p.id, p.name); };
-        peopleListDiv.appendChild(div);
-    }
-}
-
-function selectPeer(peerId, peerName) {
-    selectedPeerId = peerId;
-    chatArea.style.display = 'block';
-    const peerData = peers.get(peerId);
-    const distanceText = peerData?.distance ? getDistanceLabel(peerData.distance) : 'nearby';
-    chatMessagesDiv.innerHTML = `<div class="empty-state">💬 Chatting with ${escapeHtml(peerName)}<br><span style="font-size:0.65rem">${distanceText}</span></div>`;
-    messageInput.disabled = false;
-    sendBtn.disabled = false;
-    locationStatusSpan.innerHTML = `💬 Talking to ${peerName}`;
-    messageInput.focus();
-}
-
-function addChatMessage(msg, isSent, peerName = '') {
-    const div = document.createElement('div');
-    div.className = `message ${isSent ? 'sent' : 'received'}`;
-    div.innerHTML = isSent ? `You: ${escapeHtml(msg)}` : `${escapeHtml(peerName)}: ${escapeHtml(msg)}`;
-    chatMessagesDiv.appendChild(div);
-    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-}
-
-function sendMessage() {
-    if (groupChatActive) {
-        const msg = messageInput.value.trim();
-        if (!msg) return;
-        broadcastToAll('CHAT', { text: msg, from: myName });
-        addChatMessage(msg, true);
-        messageInput.value = '';
-    } else if (selectedPeerId) {
-        const msg = messageInput.value.trim();
-        if (!msg) return;
-        sendToPeer(selectedPeerId, 'CHAT', { text: msg, from: myName });
-        addChatMessage(msg, true);
-        messageInput.value = '';
-    } else {
-        showToast("💕 Select someone first or enable group chat", true);
-    }
-}
-
-function sendReaction(emoji) {
-    if (groupChatActive) {
-        broadcastToAll('REACTION', { emoji, from: myName });
-        addChatMessage(emoji, true, '', true);
-    } else if (selectedPeerId) {
-        sendToPeer(selectedPeerId, 'REACTION', { emoji, from: myName });
-        addChatMessage(emoji, true, '', true);
-    } else {
-        showToast("💕 Select someone first", true);
-    }
-}
-
-function sendToPeer(peerId, type, data) {
-    const p = peers.get(peerId);
-    if (p && p.conn && p.conn.open) {
-        p.conn.send({ type, ...data });
-        return true;
-    }
-    return false;
-}
-
-function broadcastToAll(type, data) {
-    for (let [_, p] of peers.entries()) {
-        if (p.conn && p.conn.open) {
-            try { p.conn.send({ type, ...data }); } catch(e) {}
-        }
-    }
-}
-
-// GPS Auto-Start
-function startGPS() {
-    if (!navigator.geolocation) {
-        locationStatusSpan.innerHTML = '❌ GPS not supported';
-        statusDot.className = 'dot red';
-        return;
+    // Get proximity category
+    function getProximity(distanceMeters) {
+        if (distanceMeters < 5) return { class: 'nearby', label: '🔥 VERY CLOSE! (<5m)', emoji: '💕' };
+        if (distanceMeters < 10) return { class: 'nearby', label: `📱 ${distanceMeters.toFixed(0)}m away • Very Close`, emoji: '💚' };
+        if (distanceMeters < 30) return { class: 'medium', label: `📍 ${distanceMeters.toFixed(0)}m away • Nearby`, emoji: '💛' };
+        if (distanceMeters < 100) return { class: 'far', label: `📍 ${distanceMeters.toFixed(0)}m away • In Area`, emoji: '❤️' };
+        return { class: 'far', label: `📍 ${distanceMeters.toFixed(0)}m away • Far`, emoji: '📡' };
     }
     
-    locationStatusSpan.innerHTML = '📍 Getting your location...';
-    statusDot.className = 'dot yellow';
-    
-    watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-            myLocation = {
-                lat: pos.coords.latitude,
-                lng: pos.coords.longitude,
-                accuracy: pos.coords.accuracy
-            };
-            gpsEnabled = true;
-            statusDot.className = 'dot green';
-            statusTextSpan.innerText = 'Online';
-            gpsAccuracySpan.innerText = `${pos.coords.accuracy.toFixed(0)}m`;
-            locationStatusSpan.innerHTML = `✅ ${myName} • ${pos.coords.accuracy.toFixed(0)}m accuracy`;
-            broadcastLocation();
-            updateAllDistances();
-            showToast(`💕 You're online as ${myName}`);
-        },
-        (err) => {
-            locationStatusSpan.innerHTML = '❌ GPS needed. Please allow and refresh.';
-            statusDot.className = 'dot red';
-            statusTextSpan.innerText = 'GPS Required';
-            peopleListDiv.innerHTML = `<div class="empty-state">📍 Please allow GPS and refresh the page to connect with people near you.</div>`;
-        },
-        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-    );
-}
-
-function broadcastLocation() {
-    if (!isActive || !gpsEnabled || !myLocation || !peerJS) return;
-    const packet = {
-        type: 'LOCATION',
-        lat: myLocation.lat,
-        lng: myLocation.lng,
-        accuracy: myLocation.accuracy,
-        name: myName,
-        timestamp: Date.now()
-    };
-    for (let [_, data] of peers.entries()) {
-        if (data.conn && data.conn.open) {
-            try { data.conn.send(packet); } catch(e) {}
-        }
-    }
-}
-
-function updateAllDistances() {
-    if (!myLocation) return;
-    for (let [_, data] of peers.entries()) {
-        if (data.location) {
-            data.distance = calculateDistance(myLocation.lat, myLocation.lng, data.location.lat, data.location.lng);
-            data.lastSeen = Date.now();
-        }
-    }
-    updatePeopleList();
-    // Remove far peers
-    for (let [id, data] of peers.entries()) {
-        if (data.distance > 100 && (Date.now() - data.lastSeen) > 30000) {
-            if (data.conn) data.conn.close();
-            peers.delete(id);
-        }
-    }
-}
-
-// WebRTC Connection
-function setupConnection(conn, peerId) {
-    peers.set(peerId, {
-        conn: conn,
-        name: null,
-        location: null,
-        distance: null,
-        lastSeen: Date.now()
-    });
-    
-    conn.on('open', () => {
-        if (myLocation) {
-            conn.send({
-                type: 'LOCATION',
-                lat: myLocation.lat,
-                lng: myLocation.lng,
-                accuracy: myLocation.accuracy,
-                name: myName,
-                timestamp: Date.now()
-            });
-        }
-    });
-    
-    conn.on('data', (data) => {
-        const p = peers.get(peerId);
-        if (!p) return;
+    // Update the people list UI
+    function updatePeopleList() {
+        const now = Date.now();
+        const activePeers = Array.from(peers.entries())
+            .filter(([_, data]) => data.location && (now - data.lastSeen) < 20000)
+            .map(([id, data]) => ({ id, ...data }));
         
-        if (data.type === 'LOCATION') {
-            p.location = { lat: data.lat, lng: data.lng };
-            p.name = data.name;
-            p.lastSeen = Date.now();
-            if (myLocation) {
-                p.distance = calculateDistance(myLocation.lat, myLocation.lng, data.lat, data.lng);
-                updatePeopleList();
-                if (p.distance < 10 && !p.notified) {
-                    p.notified = true;
-                    showToast(`💕 ${p.name} is very close! Say hi!`);
+        // Sort by distance (closest first)
+        activePeers.sort((a, b) => (a.distance || 999) - (b.distance || 999));
+        
+        peerCountSpan.innerText = activePeers.length;
+        
+        if (activePeers.length === 0) {
+            peopleListDiv.innerHTML = `<div class="empty-state">
+                🌟 No one nearby yet<br>
+                <span style="font-size:0.7rem">Share this link with someone near you!</span>
+            </div>`;
+            return;
+        }
+        
+        peopleListDiv.innerHTML = '';
+        for (let peer of activePeers) {
+            const proximity = getProximity(peer.distance);
+            const div = document.createElement('div');
+            div.className = `person-card ${proximity.class}`;
+            div.innerHTML = `
+                <div class="person-name">${proximity.emoji} ${escapeHtml(peer.name || 'Someone')}</div>
+                <div class="person-distance">${proximity.label}</div>
+            `;
+            div.onclick = () => selectPeer(peer.id, peer.name);
+            peopleListDiv.appendChild(div);
+        }
+    }
+    
+    function selectPeer(peerId, peerName) {
+        selectedPeerId = peerId;
+        chatArea.style.display = 'block';
+        const peerData = peers.get(peerId);
+        const distanceText = peerData?.distance ? getProximity(peerData.distance).label : 'nearby';
+        chatMessagesDiv.innerHTML = `<div class="empty-state">💬 Chatting with ${escapeHtml(peerName)}<br><span style="font-size:0.65rem">${distanceText}</span></div>`;
+        messageInput.disabled = false;
+        sendBtn.disabled = false;
+        messageInput.focus();
+    }
+    
+    function addChatMessage(msg, isSent, peerName = '') {
+        const div = document.createElement('div');
+        div.className = `message ${isSent ? 'sent' : 'received'}`;
+        div.innerHTML = isSent ? `You: ${escapeHtml(msg)}` : `${escapeHtml(peerName)}: ${escapeHtml(msg)}`;
+        chatMessagesDiv.appendChild(div);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+    
+    function sendMessage() {
+        if (!selectedPeerId) {
+            locationStatusSpan.innerHTML = '👆 Tap on a person first to chat';
+            return;
+        }
+        const msg = messageInput.value.trim();
+        if (!msg) return;
+        
+        const peerData = peers.get(selectedPeerId);
+        if (peerData && peerData.conn && peerData.conn.open) {
+            peerData.conn.send({ type: 'CHAT', text: msg, from: myName });
+            addChatMessage(msg, true);
+            messageInput.value = '';
+        } else {
+            locationStatusSpan.innerHTML = '❌ Connection lost. Person may have left.';
+        }
+    }
+    
+    // Broadcast my location to all connected peers
+    function broadcastLocation() {
+        if (!peer || !myLocation) return;
+        
+        const locationPacket = {
+            type: 'LOCATION',
+            lat: myLocation.lat,
+            lng: myLocation.lng,
+            accuracy: myLocation.accuracy,
+            name: myName,
+            timestamp: Date.now()
+        };
+        
+        for (let [peerId, data] of peers.entries()) {
+            if (data.conn && data.conn.open) {
+                try {
+                    data.conn.send(locationPacket);
+                } catch(e) {}
+            }
+        }
+    }
+    
+    // Start GPS tracking
+    function startGPS() {
+        if (!navigator.geolocation) {
+            locationStatusSpan.innerHTML = '❌ GPS not supported on this device';
+            gpsStatusSpan.innerHTML = 'Not supported';
+            return;
+        }
+        
+        locationStatusSpan.innerHTML = '📍 Requesting GPS permission...';
+        gpsStatusSpan.innerHTML = 'Requesting...';
+        statusDot.className = 'dot yellow';
+        
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                myLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+                gpsStatusSpan.innerHTML = `✅ ${position.coords.accuracy.toFixed(0)}m`;
+                locationStatusSpan.innerHTML = `✅ GPS active! Accuracy: ${position.coords.accuracy.toFixed(0)}m • ${myName}`;
+                statusDot.className = 'dot green';
+                statusTextSpan.innerText = 'Online';
+                
+                broadcastLocation();
+                updateDistancesToPeers();
+            },
+            (error) => {
+                let errorMsg = '';
+                if (error.code === 1) errorMsg = '❌ GPS denied. Please allow location and refresh.';
+                else if (error.code === 2) errorMsg = '❌ GPS unavailable. Try moving near a window.';
+                else errorMsg = '❌ GPS error. Please check location settings.';
+                locationStatusSpan.innerHTML = errorMsg;
+                gpsStatusSpan.innerHTML = 'Denied';
+                statusDot.className = 'dot red';
+                statusTextSpan.innerText = 'GPS Needed';
+            },
+            { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+        );
+    }
+    
+    // Calculate distances to all peers
+    function updateDistancesToPeers() {
+        if (!myLocation) return;
+        
+        let updated = false;
+        for (let [peerId, data] of peers.entries()) {
+            if (data.location) {
+                const newDistance = calculateDistance(
+                    myLocation.lat, myLocation.lng,
+                    data.location.lat, data.location.lng
+                );
+                data.distance = newDistance;
+                data.lastSeen = Date.now();
+                updated = true;
+            }
+        }
+        
+        if (updated) {
+            updatePeopleList();
+            
+            // Check for very close people
+            for (let [peerId, data] of peers.entries()) {
+                if (data.distance && data.distance < 10 && !data.notified) {
+                    data.notified = true;
+                    locationStatusSpan.innerHTML = `🎉 ${data.name} is VERY CLOSE (${data.distance.toFixed(0)}m)! Say hi!`;
+                    setTimeout(() => {
+                        if (locationStatusSpan.innerHTML.includes('Say hi')) {
+                            locationStatusSpan.innerHTML = `✅ GPS active • ${myName}`;
+                        }
+                    }, 5000);
                 }
             }
-        } else if (data.type === 'CHAT') {
-            if (groupChatActive || selectedPeerId === peerId) {
-                addChatMessage(data.text, false, data.from);
-                showToast(`💬 New message from ${data.from}`);
-            }
-        } else if (data.type === 'REACTION') {
-            if (groupChatActive || selectedPeerId === peerId) {
-                addChatMessage(data.emoji, false, data.from, true);
-            }
         }
-    });
+    }
     
-    conn.on('close', () => {
-        const peerName = peers.get(peerId)?.name || 'Someone';
-        peers.delete(peerId);
-        updatePeopleList();
-        if (selectedPeerId === peerId) {
-            selectedPeerId = null;
-            chatArea.style.display = 'none';
-            showToast(`💕 ${peerName} left`);
+    // Setup WebRTC connection
+    function setupConnection(conn, peerId) {
+        peers.set(peerId, {
+            conn: conn,
+            name: null,
+            location: null,
+            distance: null,
+            lastSeen: Date.now(),
+            notified: false
+        });
+        
+        conn.on('open', () => {
+            if (myLocation) {
+                conn.send({
+                    type: 'LOCATION',
+                    lat: myLocation.lat,
+                    lng: myLocation.lng,
+                    accuracy: myLocation.accuracy,
+                    name: myName,
+                    timestamp: Date.now()
+                });
+            }
+        });
+        
+        conn.on('data', (data) => {
+            if (data.type === 'LOCATION') {
+                const peerData = peers.get(peerId);
+                if (peerData) {
+                    peerData.location = { lat: data.lat, lng: data.lng };
+                    peerData.name = data.name;
+                    peerData.lastSeen = Date.now();
+                    if (myLocation) {
+                        peerData.distance = calculateDistance(
+                            myLocation.lat, myLocation.lng,
+                            data.lat, data.lng
+                        );
+                        updatePeopleList();
+                        locationStatusSpan.innerHTML = `✨ New person nearby: ${data.name} (${peerData.distance.toFixed(0)}m away)`;
+                    }
+                }
+            } else if (data.type === 'CHAT' && selectedPeerId === peerId) {
+                addChatMessage(data.text, false, data.from);
+            }
+        });
+        
+        conn.on('close', () => {
+            const peerData = peers.get(peerId);
+            const name = peerData?.name || 'Someone';
+            peers.delete(peerId);
+            updatePeopleList();
+            if (selectedPeerId === peerId) {
+                selectedPeerId = null;
+                chatArea.style.display = 'none';
+                locationStatusSpan.innerHTML = `👋 ${name} left`;
+            }
+        });
+    }
+    
+    // Start PeerJS (works on any network!)
+    function startPeerJS() {
+        const id = `love-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`;
+        
+        peer = new Peer(id, {
+            debug: 0,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ]
+            }
+        });
+        
+        peer.on('open', () => {
+            isActive = true;
+            statusTextSpan.innerText = 'Online';
+            locationStatusSpan.innerHTML = `✅ Connected! ${myName} • Waiting for GPS...`;
+        });
+        
+        peer.on('connection', (conn) => {
+            setupConnection(conn, conn.peer);
+        });
+        
+        peer.on('error', (err) => {
+            if (err.type === 'unavailable-id') {
+                // Normal, ignore
+            } else if (err.type === 'network') {
+                locationStatusSpan.innerHTML = '⚠️ Network issue. Using mobile data? Try refreshing.';
+            }
+        });
+    }
+    
+    // Stop everything
+    function stopScan() {
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
         }
-    });
-}
-
-function startPeerJS() {
-    const id = `love-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
-    peerJS = new Peer(id, {
-        debug: 0,
-        config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
-    });
-    peerJS.on('open', () => {
-        isActive = true;
-        statusTextSpan.innerText = 'Online';
-    });
-    peerJS.on('connection', (conn) => setupConnection(conn, conn.peer));
-    peerJS.on('error', (err) => {});
-}
-
-// Group/Private Chat
-function enableGroupChat() {
-    groupChatActive = true;
-    selectedPeerId = null;
-    chatArea.style.display = 'block';
-    chatMessagesDiv.innerHTML = '<div class="empty-state">👥 GROUP CHAT ACTIVE<br>Everyone nearby can see your messages</div>';
-    messageInput.disabled = false;
-    sendBtn.disabled = false;
-    document.getElementById('groupChatBtn').classList.add('active');
-    document.getElementById('privateChatBtn').classList.remove('active');
-    showToast("💕 Group chat enabled - talking to everyone nearby");
-}
-
-function enablePrivateChat() {
-    groupChatActive = false;
-    selectedPeerId = null;
-    chatArea.style.display = 'none';
-    document.getElementById('privateChatBtn').classList.add('active');
-    document.getElementById('groupChatBtn').classList.remove('active');
-    showToast("💕 Private chat mode - tap a person to chat");
-}
-
-// ESCAPE HTML
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-}
-
-// ============================================
-// INITIALIZE - AFTER USER ALLOWS GPS
-// ============================================
-allowBtn.onclick = () => {
-    permissionScreen.style.display = 'none';
-    mainApp.style.display = 'block';
-    startPeerJS();
-    startGPS();
-    setInterval(() => {
-        if (myLocation && isActive) {
-            updateAllDistances();
-            broadcastLocation();
+        if (peer) {
+            peer.destroy();
+            peer = null;
         }
-    }, 5000);
-};
-
-// Event Listeners
-sendBtn.onclick = sendMessage;
-messageInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-document.querySelectorAll('.reaction-btn').forEach(btn => {
-    btn.onclick = () => sendReaction(btn.getAttribute('data-reaction'));
-});
-document.getElementById('privateChatBtn').onclick = enablePrivateChat;
-document.getElementById('groupChatBtn').onclick = enableGroupChat;
+        peers.clear();
+        isActive = false;
+        selectedPeerId = null;
+        myLocation = null;
+        chatArea.style.display = 'none';
+        statusDot.className = 'dot red';
+        statusTextSpan.innerText = 'Offline';
+        gpsStatusSpan.innerHTML = 'Stopped';
+        peopleListDiv.innerHTML = '<div class="empty-state">⏹️ Stopped. Click START to begin.</div>';
+        locationStatusSpan.innerHTML = '💡 Click START, allow GPS, then ask a friend to do the same!';
+    }
+    
+    // Start everything
+    function startScan() {
+        if (isActive) stopScan();
+        startPeerJS();
+        startGPS();
+        
+        // Update distances every 5 seconds
+        setInterval(() => {
+            if (myLocation && isActive) {
+                updateDistancesToPeers();
+                broadcastLocation();
+            }
+        }, 5000);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+    
+    // Event listeners
+    startBtn.onclick = startScan;
+    stopBtn.onclick = stopScan;
+    sendBtn.onclick = sendMessage;
+    messageInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
 </script>
 </body>
 </html>
