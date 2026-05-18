@@ -1,0 +1,9 @@
+{
+    "version": "1.0.0",
+    "latest": "1.0.0",
+    "minVersion": "1.0.0",
+    "kill": false,
+    "message": "💕 New version available! Refresh for latest features",
+    "forceUpdate": false,
+    "changelog": "Initial release - LOVE CODE"
+}
