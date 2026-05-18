@@ -127,34 +127,14 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 // ============================================
-// LOVE CODE - COMPLETE PROTECTED VERSION
+// LOVE CODE - WORKING VERSION (No domain lock)
 // Created by: YOUR NAME
 // ============================================
 
-// CHANGE THIS TO YOUR DOMAIN!
-const YOUR_DOMAIN = "vajiragihanranasinghe.github.io/lovecode";  // ← CHANGE THIS AFTER DEPLOY
+// NO DOMAIN PROTECTION - This version works everywhere!
+console.log("%c💕 LOVE CODE v1.0.0 | Created with love", "color: #ff6b9d; font-size: 14px; font-weight: bold");
 
-// DOMAIN PROTECTION - Only works on your domain
-(function(){
-    const ALLOWED = ['localhost', '127.0.0.1', YOUR_DOMAIN, 'lovecode.vercel.app'];
-    const current = window.location.hostname;
-    const isValid = ALLOWED.some(d => current === d || current.endsWith('.'+d));
-    if(!isValid && !current.includes('localhost')){
-        document.body.innerHTML = `<div style="text-align:center;padding:50px;color:white;background:#0a0f1e;min-height:100vh"><h2>💕 LOVE CODE</h2><p>This app is only available at the official link.</p><p style="margin-top:20px">👉 <a href="https://${YOUR_DOMAIN}" style="color:#ff6b9d">${YOUR_DOMAIN}</a></p></div>`;
-        throw new Error('Invalid domain');
-    }
-})();
-
-// ANTI-COPY PROTECTION
-setInterval(() => {
-    if(!window.location.hostname.includes('localhost')){
-        document.addEventListener('copy', (e) => { e.preventDefault(); alert('💕 LOVE CODE - Content is protected'); return false; });
-        document.addEventListener('cut', (e) => { e.preventDefault(); return false; });
-        document.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; });
-    }
-}, 1000);
-
-// VERSION CONTROL
+// APP VERSION
 const APP_VERSION = "1.0.0";
 document.getElementById('versionBadge').innerHTML = `v${APP_VERSION}`;
 
@@ -444,12 +424,13 @@ function setupConnection(conn, peerId) {
     });
     
     conn.on('close', () => {
+        const peerName = peers.get(peerId)?.name || 'Someone';
         peers.delete(peerId);
         updatePeopleList();
         if (selectedPeerId === peerId) {
             selectedPeerId = null;
             chatArea.style.display = 'none';
-            showToast(`💕 ${p?.name || 'Someone'} left`);
+            showToast(`💕 ${peerName} left`);
         }
     });
 }
@@ -520,9 +501,6 @@ document.querySelectorAll('.reaction-btn').forEach(btn => {
 });
 document.getElementById('privateChatBtn').onclick = enablePrivateChat;
 document.getElementById('groupChatBtn').onclick = enableGroupChat;
-
-// Console watermark
-console.log("%c💕 LOVE CODE v" + APP_VERSION + " | Created with love", "color: #ff6b9d; font-size: 14px; font-weight: bold");
 </script>
 </body>
 </html>
